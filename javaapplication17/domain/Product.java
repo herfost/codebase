@@ -2,16 +2,14 @@ package javaapplication17.domain;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-public class Product<K> implements Serializable, Keyable<K>, MyCloneable<Product<K>> {
+public class Product implements Serializable, Keyable<String>, MyCloneable<Product> {
 
-    private K key;
+    private String key;
     private String description;
     private int quantity;
 
-    public Product(K key, String description, int quantity) {
+    public Product(String key, String description, int quantity) {
         this.key = key;
         this.description = description;
         this.quantity = quantity;
@@ -20,11 +18,11 @@ public class Product<K> implements Serializable, Keyable<K>, MyCloneable<Product
     public Product() {
     }
 
-    public K getKey() {
+    public String getKey() {
         return key;
     }
 
-    public void setKey(K key) {
+    public void setKey(String key) {
         this.key = key;
     }
 
@@ -49,7 +47,6 @@ public class Product<K> implements Serializable, Keyable<K>, MyCloneable<Product
         try {
             return (Product) super.clone();
         } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(Product.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
@@ -65,14 +62,14 @@ public class Product<K> implements Serializable, Keyable<K>, MyCloneable<Product
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Product<?> other = (Product<?>) obj;
+        final Product other = (Product) obj;
         if (this.quantity != other.quantity) {
             return false;
         }
-        if (!Objects.equals(this.description, other.description)) {
+        if (!Objects.equals(this.key, other.key)) {
             return false;
         }
-        if (!Objects.equals(this.key, other.key)) {
+        if (!Objects.equals(this.description, other.description)) {
             return false;
         }
         return true;

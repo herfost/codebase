@@ -2,15 +2,15 @@ package javaapplication17;
 
 import javaapplication17.domain.Product;
 import javaapplication17.persistence.Persistence;
-import javaapplication17.persistence.ProdottoPersistence;
+import javaapplication17.persistence.ProductPersistence;
 
 public class JavaApplication17 {
 
     public static void main(String[] args) {
-        ProdottoPersistence pp = ProdottoPersistence.getInstance();
+        ProductPersistence pp = ProductPersistence.getInstance();
         
-        Persistence<String, Product<String>> p = pp.getPeristence();
+        Persistence<String, Product> p = pp.getPeristence();
         
-        Product<String> product = new Product<>("Key", "description", 0);
+        Product product = new Product("Key", "description", 0);
     }
 }

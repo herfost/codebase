@@ -40,8 +40,8 @@ public class Persistence<K, T extends Serializable & Keyable<K> & MyCloneable<T>
         if (item == null) {
             throw new IllegalArgumentException("Invalid Key");
         }
-
-        item = value.getClone();
+        
+        items.set(items.indexOf(item), value.getClone());
     }
 
     @Override
