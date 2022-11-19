@@ -1,2 +1,2 @@
 # Codebase (∘⁼̴⃙̀˘︷˘⁼̴⃙́∘)
-Backup dei codici
+Backup codice
