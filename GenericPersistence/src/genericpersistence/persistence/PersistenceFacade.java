@@ -1,18 +1,21 @@
-package javaapplication17.persistence;
+package genericpersistence.persistence;
 
-import javaapplication17.domain.Keyable;
-import javaapplication17.domain.MyCloneable;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Persistence<K, T extends Serializable & Keyable<K> & MyCloneable<T>> implements IPersistence<K, T> {
+public abstract class PersistenceFacade<K, T extends IPersistenceObject<K>> implements IPersistence<K, T> {
+    private final List<T> items;
 
-    private final ArrayList<T> items;
-
-    public Persistence() {
-        items = new ArrayList<>();
+    public PersistenceFacade() {
+        items = getPersistence();
     }
+    
+    public PersistenceFacade(String path) {
+        items = getPersistence(path);
+    }
+
+    protected abstract List<T> getPersistence();
+    protected abstract List<T> getPersistence(String path);
 
     @Override
     public synchronized void create(T value) throws IllegalArgumentException {
@@ -20,18 +23,18 @@ public class Persistence<K, T extends Serializable & Keyable<K> & MyCloneable<T>
             T item = read(value.getKey());
             throw new IllegalArgumentException("Key already been used: @key = " + item.getKey());
         } catch (IllegalArgumentException ex) {
-            items.add(value.getClone());
+            items.add((T) value.getClone());
         }
     }
 
     @Override
-    public synchronized  T read(K key) throws IllegalArgumentException {
+    public synchronized T read(K key) throws IllegalArgumentException {
         T item = getItem(key);
         if (item == null) {
             throw new IllegalArgumentException("Invalid Key");
         }
 
-        return item.getClone();
+        return (T) item.getClone();
     }
 
     @Override
@@ -40,8 +43,8 @@ public class Persistence<K, T extends Serializable & Keyable<K> & MyCloneable<T>
         if (item == null) {
             throw new IllegalArgumentException("Invalid Key");
         }
-        
-        items.set(items.indexOf(item), value.getClone());
+
+        items.set(items.indexOf(item), (T) value.getClone());
     }
 
     @Override
@@ -56,16 +59,16 @@ public class Persistence<K, T extends Serializable & Keyable<K> & MyCloneable<T>
     }
 
     @Override
-    public synchronized List<T> getAll() throws IllegalArgumentException {
-        if (!items.isEmpty()) {
-            List<T> copy = new ArrayList<>();
-            for (T item : items) {
-                copy.add(item.getClone());
-            }
-            return copy;
+    public synchronized List<T> getAll() {
+        if (items.isEmpty()) {
+            return new ArrayList<>();
         }
 
-        throw new IllegalArgumentException("Empty Persistence");
+        List<T> copy = new ArrayList<>();
+        items.forEach((T item) -> {
+            copy.add((T) item.getClone());
+        });
+        return copy;
     }
 
     private synchronized T getItem(K key) {
