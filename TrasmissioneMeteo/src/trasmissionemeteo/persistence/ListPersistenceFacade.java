@@ -1,4 +1,4 @@
-package genericpersistence.persistence;
+package trasmissionemeteo.persistence;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -17,28 +17,32 @@ import java.util.logging.Logger;
  * @param <K> Datatype chiave di accesso
  * @param <T> Datatype dei valori persistiti
  */
-public abstract class MemoryPersistenceFacade<K, T extends IPersistenceObject<K>> implements IPersistence<K, T> {
+public abstract class ListPersistenceFacade<K, T extends IPersistenceObject<K>> implements IPersistence<K, T> {
 
-    private final String PATH;
     private final List<T> items;
 
-    /**
-     * Costruttore della Persistenza caricando da file;
-     *
-     * @param path: percorso del file
-     */
-    public MemoryPersistenceFacade(String path) {
-        this.PATH = path;
-        items = getPersistence(PATH);
+    public ListPersistenceFacade() {
+        items = getPersistence();
     }
 
     /**
-     * Metodo da implementare per caricare la persistenza da file
+     * Metodo da implementare per fornire la persistenza desiderata
+     *
+     * @return persistenceList
+     */
+    protected abstract List<T> getPersistence();
+
+    /**
+     * Metodo da implementare per memorizzare su file la persistenza
      *
      * @param path: percorso del file
-     * @return la lista caricata
+     * @throws java.io.IOException
+     * @throws java.io.FileNotFoundException
      */
-    protected abstract List<T> getPersistence(String path);
+    public void export(String path) throws IOException, FileNotFoundException {
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path));
+        oos.writeObject(items);
+    }
 
     /**
      * Aggiunge un nuovo elemento alla persistenza
@@ -54,7 +58,6 @@ public abstract class MemoryPersistenceFacade<K, T extends IPersistenceObject<K>
             item = read(value.getKey());
         } catch (IllegalArgumentException ex) {
             items.add((T) value.getClone());
-            writeChanges();
         }
 
         if (item != null) {
@@ -95,7 +98,6 @@ public abstract class MemoryPersistenceFacade<K, T extends IPersistenceObject<K>
         }
 
         items.set(items.indexOf(item), (T) value.getClone());
-        writeChanges();
     }
 
     /**
@@ -115,7 +117,6 @@ public abstract class MemoryPersistenceFacade<K, T extends IPersistenceObject<K>
         }
 
         items.remove(getItem(item.getKey()));
-        writeChanges();
     }
 
     /**
@@ -125,16 +126,10 @@ public abstract class MemoryPersistenceFacade<K, T extends IPersistenceObject<K>
      */
     @Override
     public List<T> getAll() {
-
-        /*
-            ois = new ObjectInputStream(new FileInputStream(path));
-            return (List<Book>) ois.readObject();
-         */
         List<T> copy = new ArrayList<>();
         items.forEach((T item) -> {
             copy.add((T) item.getClone());
         });
-
         return copy;
     }
 
@@ -162,17 +157,5 @@ public abstract class MemoryPersistenceFacade<K, T extends IPersistenceObject<K>
         });
 
         return builder.toString();
-    }
-
-    private void writeChanges() {
-        ObjectOutputStream oos;
-        try {
-            oos = new ObjectOutputStream(new FileOutputStream(PATH));
-            oos.writeObject(items);
-        } catch (FileNotFoundException ex1) {
-            Logger.getLogger(MemoryPersistenceFacade.class.getName()).log(Level.SEVERE, null, ex1);
-        } catch (IOException ex1) {
-            Logger.getLogger(MemoryPersistenceFacade.class.getName()).log(Level.SEVERE, null, ex1);
-        }
     }
 }

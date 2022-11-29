@@ -58,7 +58,7 @@ public abstract class ListPersistenceFacade<K, T extends IPersistenceObject<K>> 
      * dell'elemento sia presente nella persistenza
      */
     @Override
-    public synchronized void create(T value) throws IllegalArgumentException {
+    public void create(T value) throws IllegalArgumentException {
         T item = null;
         try {
             item = read(value.getKey());
@@ -80,7 +80,7 @@ public abstract class ListPersistenceFacade<K, T extends IPersistenceObject<K>> 
      * presente nella persistenza
      */
     @Override
-    public synchronized T read(K key) throws IllegalArgumentException {
+    public T read(K key) throws IllegalArgumentException {
         T item = getItem(key);
         if (item == null) {
             throw new IllegalArgumentException("Invalid Key");
@@ -97,7 +97,7 @@ public abstract class ListPersistenceFacade<K, T extends IPersistenceObject<K>> 
      * presente nella persistenza
      */
     @Override
-    public synchronized void update(T value) throws IllegalArgumentException {
+    public void update(T value) throws IllegalArgumentException {
         T item = getItem(value.getKey());
         if (item == null) {
             throw new IllegalArgumentException("Invalid Key");
@@ -115,7 +115,7 @@ public abstract class ListPersistenceFacade<K, T extends IPersistenceObject<K>> 
      * presente nella persistenza
      */
     @Override
-    public synchronized void delete(K key) throws IllegalArgumentException {
+    public void delete(K key) throws IllegalArgumentException {
         T item = getItem(key);
 
         if (item == null) {
@@ -131,7 +131,7 @@ public abstract class ListPersistenceFacade<K, T extends IPersistenceObject<K>> 
      * @return persistenceList
      */
     @Override
-    public synchronized List<T> getAll() {
+    public List<T> getAll() {
         List<T> copy = new ArrayList<>();
         items.forEach((T item) -> {
             copy.add((T) item.getClone());
@@ -145,7 +145,7 @@ public abstract class ListPersistenceFacade<K, T extends IPersistenceObject<K>> 
      * @param key: la chiave di accesso
      * @return T item | null
      */
-    private synchronized T getItem(K key) {
+    private T getItem(K key) {
         for (T item : items) {
             if (item.getKey().equals(key)) {
                 return item;
@@ -156,7 +156,7 @@ public abstract class ListPersistenceFacade<K, T extends IPersistenceObject<K>> 
     }
 
     @Override
-    synchronized public String toString() {
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         items.forEach(item -> {
             builder.append(item.toString()).append('\n');
