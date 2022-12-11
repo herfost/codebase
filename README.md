@@ -1,4 +1,3 @@
 # Codebase (∘⁼̴⃙̀˘︷˘⁼̴⃙́∘)
-Backup codice
-Collaborators:
-- Blessium
+
+Progetti: [NetbeansProjects](https://github.com/herfost/NetBeansProjects)
